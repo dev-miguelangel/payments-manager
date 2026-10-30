@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Pagos</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <!-- Main view: lists, then receipt button -->
+  <div id="view-main">
+    <header class="topbar">
+      <h1>Pagos</h1>
+      <button type="button" id="general-btn" class="gear" title="Configuración general" aria-label="Configuración general"></button>
+    </header>
+
+    <section id="lists">
+      <div class="month-header">
+        <h2>Mensuales</h2>
+        <div class="month-nav">
+          <button type="button" id="month-prev" class="icon" aria-label="Mes anterior">‹</button>
+          <span id="month-label"></span>
+          <button type="button" id="month-next" class="icon" aria-label="Mes siguiente">›</button>
+        </div>
+      </div>
+      <div id="month-progress" class="progress" hidden>
+        <div class="progress-text"></div>
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+      </div>
+      <ul id="list-monthly" class="list"></ul>
+      <h2>Únicos</h2>
+      <ul id="list-once" class="list"></ul>
+    </section>
+
+    <section id="current">
+      <div id="receipt-box" hidden>
+        <button type="button" id="receipt-btn" class="receipt">📸 Guardar comprobante</button>
+        <p id="receipt-status" class="status" hidden></p>
+        <div id="capture-help" class="notice" hidden>
+          <span>Chrome bloqueó la captura desde el panel. Usa <strong>clic derecho → Guardar comprobante (Pagos)</strong>, el atajo <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>, o actívala en la configuración del sitio.</span>
+          <button type="button" id="capture-settings-btn" class="secondary">Abrir configuración</button>
+        </div>
+      </div>
+
+      <button type="button" id="add-btn" class="secondary add" hidden>+ Agregar este sitio</button>
+      <form id="save-form" class="card" hidden>
+        <div id="add-domain" class="domain"></div>
+        <label>
+          Alias (opcional)
+          <input id="alias" type="text" placeholder="Ej: Luz, Arriendo…" maxlength="60">
+        </label>
+        <div class="row">
+          <button type="submit" data-type="monthly">Mensual</button>
+          <button type="submit" data-type="once">Único</button>
+          <button type="button" id="add-cancel" class="secondary">Cancelar</button>
+        </div>
+      </form>
+      <p id="error" class="error" hidden></p>
+    </section>
+
+    <section id="pdfs" class="card" hidden>
+      <div class="label">Comprobantes recibidos</div>
+      <ul id="pdf-list" class="pdf-list"></ul>
+      <button type="button" id="pdf-move-btn" hidden>Mover a la carpeta</button>
+    </section>
+
+  </div>
+
+  <!-- Site settings -->
+  <div id="view-site" hidden>
+    <header class="topbar">
+      <button type="button" class="back" data-back>‹ Volver</button>
+    </header>
+    <div class="site-title">
+      <strong id="site-name"></strong>
+      <div id="site-domain" class="sub"></div>
+    </div>
+
+    <section class="card">
+      <form id="site-alias-form">
+        <label>
+          Alias
+          <input id="site-alias" type="text" maxlength="60" placeholder="Sin alias (se usa el dominio)">
+        </label>
+        <label>
+          Tipo
+          <select id="site-type">
+            <option value="monthly">Mensual</option>
+            <option value="once">Único</option>
+          </select>
+        </label>
+        <button type="submit">Guardar cambios</button>
+      </form>
+    </section>
+
+    <section class="card settings">
+      <label class="toggle">
+        <input id="site-border" type="checkbox">
+        <span>
+          <strong>Borde blanco</strong>
+          <span class="sub">Marca la página cuando estás en este sitio.</span>
+        </span>
+      </label>
+      <label class="toggle">
+        <input id="site-capture" type="checkbox">
+        <span>
+          <strong>Capturas desde el panel</strong>
+          <span class="sub">Permite que <em>Guardar comprobante</em> funcione siempre. Necesita acceso a todos los sitios y aplica a todos. Sin esto, usa clic derecho o <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>.</span>
+        </span>
+      </label>
+    </section>
+
+    <button type="button" id="site-delete" class="danger wide">Eliminar sitio</button>
+  </div>
+
+  <!-- General settings -->
+  <div id="view-general" hidden>
+    <header class="topbar">
+      <button type="button" class="back" data-back>‹ Volver</button>
+    </header>
+    <div class="site-title"><strong>Configuración</strong></div>
+
+    <section class="card folder">
+      <div>
+        <div class="label">Carpeta de comprobantes</div>
+        <div id="folder-name" class="folder-name">Sin elegir</div>
+      </div>
+      <button type="button" id="folder-btn" class="secondary">Elegir</button>
+    </section>
+
+    <section class="card">
+      <div class="label">Atajo de teclado</div>
+      <p class="muted small">Guarda el comprobante con <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>.</p>
+      <button type="button" id="shortcuts-btn" class="secondary wide">Cambiar atajo</button>
+    </section>
+  </div>
+
+  <script type="module" src="sidepanel.js"></script>
+</body>
+</html>
