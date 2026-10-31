@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Pagos",
-  "version": "0.12.0",
+  "version": "1.0.0",
   "description": "Organiza tus pagos mensuales y únicos, y guarda sus comprobantes.",
   "icons": {
     "16": "icons/icon16.png",
