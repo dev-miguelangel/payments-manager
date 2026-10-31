@@ -19,6 +19,8 @@
   }
 }
 * { box-sizing: border-box; }
+/* Classes that set display (.notice, label…) would otherwise override the hidden attribute. */
+[hidden] { display: none !important; }
 body {
   margin: 0;
   padding: 12px;
@@ -101,7 +103,11 @@ h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: v
 .folder button { flex: 0 0 auto; }
 .label { font-size: 12px; color: var(--muted); }
 .folder-name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-button.receipt { width: 100%; margin-bottom: 8px; padding: 10px; font-weight: 600; }
+button.receipt { width: 100%; padding: 10px; font-weight: 600; }
+.receipt-buttons { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+#receipt-label { margin-bottom: 6px; }
+.pick { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.pick button { flex: 0 0 auto; padding: 4px 10px; font-size: 13px; }
 button:disabled { opacity: .6; cursor: default; }
 .status { font-size: 12px; color: var(--muted); margin: 0 0 10px; word-break: break-all; }
 .status.ok { color: #16a34a; }
@@ -129,8 +135,11 @@ button.icon {
 .check { display: flex; align-items: flex-start; gap: 8px; min-width: 0; }
 .check input { width: 16px; height: 16px; margin: 2px 0 0; accent-color: #16a34a; cursor: pointer; flex: 0 0 auto; }
 .state { font-size: 12px; white-space: nowrap; color: var(--muted); }
-.state.pending { color: #d97706; }
-.state.done { color: #16a34a; }
+.state.pending { color: var(--muted); }
+.state.soon { color: #d97706; font-weight: 600; }
+.state.overdue { color: var(--danger); font-weight: 600; }
+.state.done, .state.paid { color: #16a34a; }
+.list li.overdue { border-color: var(--danger); }
 .pdf-list { list-style: none; margin: 6px 0 0; padding: 0; font-size: 13px; }
 .pdf-list li { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; border-top: 1px solid var(--border); }
 .pdf-list li:first-child { border-top: 0; }
@@ -148,7 +157,8 @@ kbd {
   background: var(--bg);
 }
 .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; min-height: 30px; }
-h1 { font-size: 16px; margin: 0; }
+h1 { font-size: 16px; margin: 0; flex: 1; }
+#summary-btn { margin-right: 2px; }
 button.gear {
   flex: 0 0 auto;
   display: grid;
@@ -175,6 +185,126 @@ button.wide { width: 100%; }
 .toggle input { width: 16px; height: 16px; margin: 2px 0 0; flex: 0 0 auto; accent-color: var(--accent); }
 .toggle .sub { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
 .small { font-size: 13px; margin: 4px 0 10px; }
+.hint { display: block; font-size: 11px; color: var(--muted); margin: -6px 0 10px; }
+.tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  vertical-align: 1px;
+}
+.fold { margin: 4px 0 8px; }
+.fold summary {
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--muted);
+  padding: 4px 2px;
+  list-style-position: inside;
+}
+.fold summary:hover { color: var(--text); }
+.fold .list { margin-top: 6px; }
+.fold .list li { opacity: .8; }
+.state-card { display: flex; flex-direction: column; gap: 8px; }
+.state-card .muted { margin: 0; }
+button.suggest { flex: 0 0 auto; padding: 2px 8px; font-size: 12px; }
+.inline-fields { display: flex; gap: 12px; }
+.inline-fields label { flex: 1; }
+.inline { display: flex; align-items: center; gap: 6px; color: var(--text); font-size: 13px; }
+.inline input { width: 56px; margin: 4px 0 0; }
+.inline select { margin: 4px 0 0; }
+.list li { flex-wrap: wrap; }
+.amount-editor { flex-basis: 100%; display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+.amount-editor input { margin: 0; padding: 5px 8px; font-size: 13px; }
+.amount-editor button { flex: 0 0 auto; padding: 4px 10px; font-size: 13px; }
+#receipt-amount .amount-editor { margin: 0 0 10px; }
+.state.clickable { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
+.history-head { display: flex; justify-content: space-between; align-items: baseline; }
+.chart {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 72px;
+  margin: 8px 0 4px;
+  border-bottom: 1px solid var(--border);
+}
+.chart .col { flex: 1; height: 100%; display: flex; align-items: flex-end; cursor: default; }
+.chart .bar { width: 100%; max-width: 18px; margin: 0 auto; background: var(--accent); border-radius: 4px 4px 0 0; }
+.chart .col:hover .bar, .chart .col.active .bar { opacity: .75; }
+.chart-axis { display: flex; gap: 2px; font-size: 10px; color: var(--muted); }
+.chart-axis span { flex: 1; text-align: center; }
+.chart-tip {
+  position: fixed;
+  z-index: 10;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--text);
+  color: var(--card);
+  font-size: 12px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.history { list-style: none; margin: 10px 0 0; padding: 0; font-size: 13px; }
+.history li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border); }
+.history li > .month { flex: 1; }
+.history .amount { font-variant-numeric: tabular-nums; }
+.history .delta { font-size: 11px; color: var(--muted); min-width: 46px; text-align: right; }
+textarea {
+  width: 100%;
+  margin: 4px 0 0;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  resize: vertical;
+}
+.fields-hint { margin: 2px 0 8px; }
+.fields-edit .field-row { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
+.fields-edit input { margin: 0; padding: 6px 8px; font-size: 13px; }
+.fields-edit .field-label { flex: 0 0 38%; }
+.fields-edit button { flex: 0 0 auto; }
+.note-label { margin-top: 10px; }
+#current-fields { margin-bottom: 10px; }
+.data-group { margin-bottom: 8px; }
+.data-group .label { margin-bottom: 4px; }
+.data-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card);
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+.data-row .k { color: var(--muted); flex: 0 0 auto; }
+.data-row .v { flex: 1; min-width: 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; user-select: all; }
+.data-row button { flex: 0 0 auto; padding: 2px 8px; font-size: 12px; }
+.data-note { font-size: 12px; color: var(--muted); font-style: italic; margin: 2px 0 0; white-space: pre-wrap; }
+.receipts-list .receipt-month { font-size: 12px; color: var(--muted); margin: 10px 0 4px; }
+.receipts-list .receipt-month:first-child { margin-top: 4px; }
+.receipts-list button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  background: var(--bg);
+  border-color: var(--border);
+  color: var(--text);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.receipts-list button:hover { border-color: var(--accent); }
+button.clip { flex: 0 0 auto; padding: 0 4px; height: 26px; background: transparent; border-color: transparent; font-size: 15px; }
+button.clip:hover { border-color: var(--border); background: var(--bg); }
 .muted { color: var(--muted); margin: 0; }
 .error { color: var(--danger); margin: 8px 0 0; }
 .empty { color: var(--muted); font-size: 13px; padding: 4px 0; }

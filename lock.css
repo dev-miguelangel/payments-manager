@@ -1,0 +1,45 @@
+/* Lock screen shared by the panel and the summary page (uses each page's color tokens). */
+.lock-screen {
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.lock-form {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.lock-form h1 { font-size: 18px; margin: 0; }
+.lock-text { font-size: 13px; color: var(--muted); margin: 0 0 4px; }
+.lock-form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+.lock-form input {
+  width: 100%;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+.lock-form button { width: 100%; margin-top: 4px; }
+.lock-error { color: var(--danger); font-size: 13px; margin: 0; }
+button.danger { background: transparent; border-color: var(--danger); color: var(--danger); }
+.lock-form button.danger:not(:disabled) { background: var(--danger); color: #fff; }
+.lock-form button.lock-link {
+  margin-top: 0;
+  padding: 4px;
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+  font-size: 12px;
+}
+.lock-form button.lock-link:hover { color: var(--text); text-decoration: underline; }

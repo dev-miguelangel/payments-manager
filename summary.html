@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resumen de pagos</title>
+  <link rel="stylesheet" href="summary.css">
+  <link rel="stylesheet" href="lock.css">
+</head>
+<body>
+  <div id="lock" class="lock-screen" hidden></div>
+  <main id="content" hidden>
+    <header class="head">
+      <div>
+        <h1>Resumen de pagos</h1>
+        <div id="range-label" class="sub"></div>
+      </div>
+      <div class="controls">
+        <div class="segmented" role="group" aria-label="Período">
+          <button type="button" data-months="1">Mes</button>
+          <button type="button" data-months="3">3 meses</button>
+          <button type="button" data-months="6">6 meses</button>
+          <button type="button" data-months="12">12 meses</button>
+        </div>
+        <label class="end">
+          Hasta
+          <input id="end-month" type="month" required>
+        </label>
+        <button type="button" id="export-btn" class="secondary">Exportar</button>
+      </div>
+    </header>
+
+    <section id="tiles" class="tiles"></section>
+
+    <div class="charts">
+      <section class="card">
+        <h2 id="months-title">Gasto por mes</h2>
+        <div id="months-legend" class="legend"></div>
+        <div id="months-chart" class="vchart" role="img"></div>
+        <p id="months-empty" class="empty" hidden>Sin montos registrados en este período.</p>
+      </section>
+
+      <section class="card">
+        <h2>Gasto por pago</h2>
+        <div id="payments-chart" class="hchart" role="img"></div>
+        <p id="payments-empty" class="empty" hidden>Sin montos registrados en este período.</p>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>Detalle</h2>
+      <div class="table-wrap">
+        <table id="detail">
+          <thead>
+            <tr>
+              <th>Pago</th>
+              <th>Sitio</th>
+              <th>Tipo</th>
+              <th>Vence</th>
+              <th>Estado</th>
+              <th>Fecha de pago</th>
+              <th class="num">Monto</th>
+              <th class="num">Comprob.</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot></tfoot>
+        </table>
+      </div>
+      <p id="detail-empty" class="empty" hidden>No hay pagos en este período.</p>
+    </section>
+  </main>
+
+  <div id="tip" class="tip" hidden></div>
+  <script type="module" src="summary.js"></script>
+</body>
+</html>

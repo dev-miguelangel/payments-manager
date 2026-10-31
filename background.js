@@ -1,58 +1,153 @@
 import { captureTab } from './lib/capture.js';
 import { addPendingPdf, timestamp } from './lib/files.js';
+import { PANEL_PORT, lockNow } from './lib/lock.js';
 import {
+  displayName,
   domainFromUrl,
-  findByDomain,
+  shortName,
+  dueStatus,
+  findAllByDomain,
+  findById,
   getPayments,
+  getSettings,
   hasSitePermission,
-  isPaid,
   matchPatterns,
-  monthlyPaymentsFor,
+  migratePayments,
+  monthKey,
+  recurringPaymentsFor,
 } from './lib/storage.js';
 
 const BORDER_SCRIPT_ID = 'payment-border';
 
+// Context menu ids: one entry for single-payment sites, a submenu for sites with several.
 const MENU_ID = 'save-receipt';
+const MENU_MULTI_ID = 'save-receipt-multi';
+const MENU_PAYMENT_PREFIX = 'receipt:';
+const MENU_CONTEXTS = ['page', 'frame', 'selection', 'link', 'image'];
 
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
-  chrome.contextMenus.create({
-    id: MENU_ID,
-    title: 'Guardar comprobante (Pagos)',
-    contexts: ['page', 'frame', 'selection', 'link', 'image'],
-    visible: false,
+// Open side panels (one per window at most). When the last one closes, the extension locks
+// so the summary page can't stay open without the password.
+const openPanels = new Set();
+chrome.runtime.onConnect.addListener((port) => {
+  if (port.name !== PANEL_PORT) return;
+  openPanels.add(port);
+  port.onDisconnect.addListener(() => {
+    openPanels.delete(port);
+    if (openPanels.size === 0) lockNow();
   });
+});
+
+chrome.runtime.onInstalled.addListener(async () => {
+  chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
+  await migratePayments();
   queueSync();
-  updateBadge();
+  tick();
 });
 chrome.runtime.onStartup.addListener(() => {
   queueSync();
-  updateBadge();
+  tick();
 });
 
-// Number of monthly payments still pending this month, shown on the toolbar icon.
+// This month's due payments with their status (paid, pending, soon, overdue).
+async function currentStatuses() {
+  const settings = await getSettings();
+  const statuses = recurringPaymentsFor(await getPayments())
+    .map((payment) => ({ payment, status: dueStatus(payment, new Date(), settings) }));
+  return { settings, statuses };
+}
+
+// Pending count on the toolbar icon: red if something is overdue, orange otherwise.
 async function updateBadge() {
-  const pending = monthlyPaymentsFor(await getPayments()).filter((p) => !isPaid(p)).length;
-  await chrome.action.setBadgeBackgroundColor({ color: '#d97706' });
+  const { statuses } = await currentStatuses();
+  const pending = statuses.filter(({ status }) => status.kind !== 'paid').length;
+  const overdue = statuses.filter(({ status }) => status.kind === 'overdue').length;
+  await chrome.action.setBadgeBackgroundColor({ color: overdue ? '#dc2626' : '#d97706' });
   await chrome.action.setBadgeText({ text: pending ? String(pending) : '' });
-  await chrome.action.setTitle({
-    title: pending ? `Pagos: ${pending} pendiente${pending === 1 ? '' : 's'} este mes` : 'Pagos',
+  const parts = [];
+  if (pending) parts.push(`${pending} pendiente${pending === 1 ? '' : 's'} este mes`);
+  if (overdue) parts.push(`${overdue} vencido${overdue === 1 ? '' : 's'}`);
+  await chrome.action.setTitle({ title: parts.length ? `Pagos: ${parts.join(', ')}` : 'Pagos' });
+}
+
+// --- Reminders ---------------------------------------------------------------
+// One notification per payment and month for "due soon", and one more once it's overdue.
+
+async function checkReminders() {
+  const { settings, statuses } = await currentStatuses();
+  const now = new Date();
+  if (!settings.notifications || now.getHours() < settings.reminderHour) return;
+
+  const month = monthKey(now);
+  const { notified = {} } = await chrome.storage.local.get('notified');
+  // Forget past months so the map doesn't grow forever.
+  const next = Object.fromEntries(Object.entries(notified).filter(([key]) => key.endsWith(`:${month}`)));
+
+  for (const { payment, status } of statuses) {
+    const key = `${payment.id}:${month}`;
+    const name = displayName(payment);
+    if (status.kind === 'soon' && !next[key]) {
+      notify(payment, `${name}: ${status.text.toLowerCase()}`, 'Pulsa para ir a pagar.');
+      next[key] = 'before';
+    } else if (status.kind === 'overdue' && next[key] !== 'overdue') {
+      notify(payment, `${name} está vencido`, `${status.text}. Pulsa para ir a pagar.`);
+      next[key] = 'overdue';
+    }
+  }
+  await chrome.storage.local.set({ notified: next });
+}
+
+function notify(payment, title, message) {
+  chrome.notifications.create(`due:${payment.id}`, {
+    type: 'basic',
+    iconUrl: 'icons/icon128.png',
+    title,
+    message,
+    priority: 1,
   });
 }
 
-// Recheck every few hours so the badge resets when a new month starts.
-chrome.alarms.create('badge', { periodInMinutes: 60 * 6 });
+// Click: go to the site (an already open tab if there is one).
+chrome.notifications.onClicked.addListener(async (notificationId) => {
+  if (!notificationId.startsWith('due:')) return;
+  chrome.notifications.clear(notificationId);
+  const payment = await findById(notificationId.slice(4));
+  if (!payment) return;
+  const [tab] = (await chrome.tabs.query({ url: matchPatterns(payment.domain) }))
+    .filter((t) => domainFromUrl(t.url) === payment.domain);
+  if (tab) {
+    await chrome.tabs.update(tab.id, { active: true });
+    await chrome.windows.update(tab.windowId, { focused: true });
+  } else {
+    const created = await chrome.tabs.create({ url: payment.url });
+    await chrome.windows.update(created.windowId, { focused: true });
+  }
+});
+
+function tick() {
+  updateBadge();
+  checkReminders();
+}
+
+// Periodic check: badge colour changes with the date and reminders fire at their hour.
+// Only create the alarm if missing; re-creating it on every wake-up would reset its timer.
+chrome.alarms.get('tick').then((alarm) => {
+  if (!alarm) chrome.alarms.create('tick', { periodInMinutes: 30 });
+});
+chrome.alarms.clear('badge'); // Replaced by "tick".
 chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === 'badge') updateBadge();
+  if (alarm.name === 'tick') tick();
 });
 
 const wantsBorder = (payment) => payment.showBorder !== false;
 
+// Domains where at least one payment wants the border.
+const borderDomains = (payments) => new Set(payments.filter(wantsBorder).map((p) => p.domain));
+
 // Saved sites with the border turned on and access granted.
 async function permittedDomains() {
   const domains = [];
-  for (const payment of await getPayments()) {
-    if (wantsBorder(payment) && await hasSitePermission(payment.domain)) domains.push(payment.domain);
+  for (const domain of borderDomains(await getPayments())) {
+    if (await hasSitePermission(domain)) domains.push(domain);
   }
   return domains;
 }
@@ -96,12 +191,43 @@ async function removeBorder(domain) {
   }
 }
 
-// The right-click entry only shows up on saved sites.
+// The right-click entries only show up on saved sites. Sites with one payment get a single
+// entry; sites with several get a submenu with one entry per payment.
 async function syncContextMenu() {
-  const domains = (await getPayments()).map((p) => p.domain);
-  await chrome.contextMenus.update(MENU_ID, domains.length
-    ? { visible: true, documentUrlPatterns: domains.flatMap(matchPatterns) }
-    : { visible: false });
+  const byDomain = Map.groupBy(await getPayments(), (p) => p.domain);
+  const single = [...byDomain].filter(([, list]) => list.length === 1).map(([d]) => d);
+  const multi = [...byDomain].filter(([, list]) => list.length > 1);
+
+  await chrome.contextMenus.removeAll();
+  const create = (props) => new Promise((resolve) => chrome.contextMenus.create(props, resolve));
+  if (single.length) {
+    await create({
+      id: MENU_ID,
+      title: 'Guardar comprobante (Pagos)',
+      contexts: MENU_CONTEXTS,
+      documentUrlPatterns: single.flatMap(matchPatterns),
+    });
+  }
+  if (multi.length) {
+    await create({
+      id: MENU_MULTI_ID,
+      title: 'Guardar comprobante (Pagos)',
+      contexts: MENU_CONTEXTS,
+      documentUrlPatterns: multi.flatMap(([d]) => matchPatterns(d)),
+    });
+    for (const [domain, list] of multi) {
+      const sorted = list.toSorted((a, b) => shortName(a).localeCompare(shortName(b), 'es'));
+      for (const payment of sorted) {
+        await create({
+          id: MENU_PAYMENT_PREFIX + payment.id,
+          parentId: MENU_MULTI_ID,
+          title: shortName(payment),
+          contexts: MENU_CONTEXTS,
+          documentUrlPatterns: matchPatterns(domain),
+        });
+      }
+    }
+  }
 }
 
 async function sync() {
@@ -122,15 +248,17 @@ function queueSync(beforeSync) {
 }
 
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area !== 'local' || !changes.payments) return;
-  updateBadge();
+  if (area !== 'local') return;
+  if (changes.settings) tick();
+  if (!changes.payments) return;
+  tick();
   const oldPayments = changes.payments.oldValue ?? [];
   const newPayments = changes.payments.newValue ?? [];
   const after = new Set(newPayments.map((p) => p.domain));
-  const removed = oldPayments.map((p) => p.domain).filter((d) => !after.has(d));
-  const borderOff = newPayments
-    .filter((p) => !wantsBorder(p) && oldPayments.some((o) => o.id === p.id && wantsBorder(o)))
-    .map((p) => p.domain);
+  // Permission is only returned once the last payment of a site is gone.
+  const removed = [...new Set(oldPayments.map((p) => p.domain))].filter((d) => !after.has(d));
+  const borderAfter = borderDomains(newPayments);
+  const borderOff = [...borderDomains(oldPayments)].filter((d) => after.has(d) && !borderAfter.has(d));
 
   queueSync(async () => {
     for (const domain of borderOff) await removeBorder(domain);
@@ -148,15 +276,19 @@ chrome.permissions.onRemoved.addListener(() => queueSync());
 // --- Screenshot from the context menu or keyboard shortcut ---------------------
 // Both grant activeTab, which captureVisibleTab requires; a click inside the side panel doesn't.
 
-async function saveReceiptFromTab(tab) {
+// paymentId: the payment chosen in the submenu; otherwise the site's only payment, or
+// null when it has several (the panel then asks which one).
+async function saveReceiptFromTab(tab, paymentId = null) {
   const domain = tab?.url && domainFromUrl(tab.url);
-  const payment = domain && await findByDomain(domain);
-  if (!payment) return;
+  const payments = domain ? await findAllByDomain(domain) : [];
+  if (payments.length === 0) return;
+  if (!paymentId && payments.length === 1) paymentId = payments[0].id;
 
   const date = new Date();
   const pending = {
     id: `shot-${date.getTime()}`,
-    paymentId: payment.id,
+    paymentId,
+    domain,
     filename: `${timestamp(date)}.png`,
     createdAt: date.getTime(),
   };
@@ -175,9 +307,15 @@ function openPanel(tab) {
 }
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId !== MENU_ID || !tab) return;
-  openPanel(tab);
-  saveReceiptFromTab(tab);
+  if (!tab) return;
+  const id = String(info.menuItemId);
+  if (id === MENU_ID) {
+    openPanel(tab);
+    saveReceiptFromTab(tab);
+  } else if (id.startsWith(MENU_PAYMENT_PREFIX)) {
+    openPanel(tab);
+    saveReceiptFromTab(tab, id.slice(MENU_PAYMENT_PREFIX.length));
+  }
 });
 
 chrome.commands.onCommand.addListener((command, tab) => {
@@ -197,10 +335,12 @@ chrome.downloads.onCreated.addListener(async (item) => {
   const [activeTab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
   for (const url of [item.referrer, item.finalUrl, item.url, activeTab?.url]) {
     const domain = url && domainFromUrl(url);
-    const payment = domain && await findByDomain(domain);
-    if (payment) {
+    const payments = domain ? await findAllByDomain(domain) : [];
+    if (payments.length) {
       const tabId = activeTab && domainFromUrl(activeTab.url) === domain ? activeTab.id : null;
-      await chrome.storage.session.set({ [`dl:${item.id}`]: { paymentId: payment.id, tabId } });
+      // With several payments on the site, the panel asks which one the PDF belongs to.
+      const paymentId = payments.length === 1 ? payments[0].id : null;
+      await chrome.storage.session.set({ [`dl:${item.id}`]: { paymentId, domain, tabId } });
       return;
     }
   }
@@ -219,6 +359,7 @@ chrome.downloads.onChanged.addListener(async (delta) => {
   const pending = {
     id: item.id,
     paymentId: source.paymentId,
+    domain: source.domain,
     filename: item.filename.split(/[/\\]/).pop(),
     createdAt: Date.parse(item.startTime) || Date.now(),
   };

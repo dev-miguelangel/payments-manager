@@ -4,18 +4,24 @@
   <meta charset="utf-8">
   <title>Pagos</title>
   <link rel="stylesheet" href="sidepanel.css">
+  <link rel="stylesheet" href="lock.css">
 </head>
 <body>
-  <!-- Main view: lists, then receipt button -->
-  <div id="view-main">
+  <!-- Password: created on first use, asked each time the browser starts -->
+  <div id="view-lock" class="lock-screen" hidden></div>
+
+  <!-- Main view: lists, then receipt button (shown once unlocked) -->
+  <div id="view-main" hidden>
     <header class="topbar">
       <h1>Pagos</h1>
+      <button type="button" id="summary-btn" class="gear" title="Resumen de pagos" aria-label="Resumen de pagos"></button>
       <button type="button" id="general-btn" class="gear" title="Configuración general" aria-label="Configuración general"></button>
     </header>
+    <p id="summary-notice" class="notice" role="status" hidden></p>
 
     <section id="lists">
       <div class="month-header">
-        <h2>Mensuales</h2>
+        <h2>Recurrentes</h2>
         <div class="month-nav">
           <button type="button" id="month-prev" class="icon" aria-label="Mes anterior">‹</button>
           <span id="month-label"></span>
@@ -27,14 +33,25 @@
         <div class="progress-bar"><div class="progress-fill"></div></div>
       </div>
       <ul id="list-monthly" class="list"></ul>
+      <details id="not-due" class="fold" hidden>
+        <summary></summary>
+        <ul id="list-not-due" class="list"></ul>
+      </details>
       <h2>Únicos</h2>
       <ul id="list-once" class="list"></ul>
+      <details id="inactive" class="fold" hidden>
+        <summary></summary>
+        <ul id="list-inactive" class="list"></ul>
+      </details>
     </section>
 
     <section id="current">
       <div id="receipt-box" hidden>
-        <button type="button" id="receipt-btn" class="receipt">📸 Guardar comprobante</button>
+        <div id="receipt-label" class="label" hidden>📸 Guardar comprobante para:</div>
+        <div id="receipt-buttons" class="receipt-buttons"></div>
         <p id="receipt-status" class="status" hidden></p>
+        <div id="receipt-amount"></div>
+        <div id="current-fields"></div>
         <div id="capture-help" class="notice" hidden>
           <span>Chrome bloqueó la captura desde el panel. Usa <strong>clic derecho → Guardar comprobante (Pagos)</strong>, el atajo <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>, o actívala en la configuración del sitio.</span>
           <button type="button" id="capture-settings-btn" class="secondary">Abrir configuración</button>
@@ -48,8 +65,12 @@
           Alias (opcional)
           <input id="alias" type="text" placeholder="Ej: Luz, Arriendo…" maxlength="60">
         </label>
+        <label>
+          Monto fijo (opcional, solo recurrentes)
+          <input id="add-amount" type="text" inputmode="numeric" placeholder="Ej: cuota de un crédito">
+        </label>
         <div class="row">
-          <button type="submit" data-type="monthly">Mensual</button>
+          <button type="submit" data-type="recurring">Recurrente</button>
           <button type="submit" data-type="once">Único</button>
           <button type="button" id="add-cancel" class="secondary">Cancelar</button>
         </div>
@@ -84,11 +105,31 @@
         <label>
           Tipo
           <select id="site-type">
-            <option value="monthly">Mensual</option>
             <option value="once">Único</option>
+            <option value="1">Mensual</option>
+            <option value="2">Bimestral (cada 2 meses)</option>
+            <option value="3">Trimestral (cada 3 meses)</option>
+            <option value="6">Semestral (cada 6 meses)</option>
+            <option value="12">Anual</option>
           </select>
         </label>
+        <label id="site-due-row">
+          Vence el día
+          <input id="site-due" type="number" min="1" max="31" placeholder="Sin vencimiento">
+          <span class="hint">Si el mes tiene menos días, vence el último día del mes.</span>
+        </label>
+        <label id="site-amount-row">
+          Monto fijo
+          <input id="site-amount" type="text" inputmode="numeric" placeholder="Sin monto fijo">
+          <span class="hint">Se completa solo al marcar el pago como pagado. Se puede cambiar en cada mes.</span>
+        </label>
+        <label id="site-start-row">
+          Mes de inicio
+          <input id="site-start" type="month" required>
+          <span class="hint" id="site-start-hint"></span>
+        </label>
         <button type="submit">Guardar cambios</button>
+        <p id="site-error" class="error" hidden></p>
       </form>
     </section>
 
@@ -97,7 +138,7 @@
         <input id="site-border" type="checkbox">
         <span>
           <strong>Borde blanco</strong>
-          <span class="sub">Marca la página cuando estás en este sitio.</span>
+          <span class="sub" id="site-border-help">Marca la página cuando estás en este sitio.</span>
         </span>
       </label>
       <label class="toggle">
@@ -107,6 +148,50 @@
           <span class="sub">Permite que <em>Guardar comprobante</em> funcione siempre. Necesita acceso a todos los sitios y aplica a todos. Sin esto, usa clic derecho o <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>.</span>
         </span>
       </label>
+    </section>
+
+    <section class="card">
+      <div class="label">Datos del pago</div>
+      <p class="hint fields-hint">Se muestran con un botón para copiarlos cuando estás en el sitio.</p>
+      <div id="site-fields" class="fields-edit"></div>
+      <button type="button" id="site-field-add" class="secondary wide">+ Agregar dato</button>
+      <label class="note-label">
+        Nota
+        <textarea id="site-note" rows="2" maxlength="500" placeholder="Ej: pagar con la tarjeta terminada en 1234"></textarea>
+      </label>
+      <datalist id="field-labels">
+        <option value="Nº cliente"></option>
+        <option value="Nº de cuenta"></option>
+        <option value="Nº de servicio"></option>
+        <option value="RUT"></option>
+        <option value="Contrato"></option>
+        <option value="Medidor"></option>
+        <option value="Patente"></option>
+        <option value="Rol"></option>
+      </datalist>
+    </section>
+
+    <section class="card state-card">
+      <div id="site-state" class="small muted"></div>
+      <button type="button" id="site-pause" class="secondary wide" hidden></button>
+      <button type="button" id="site-archive" class="secondary wide" hidden></button>
+    </section>
+
+    <section id="receipts-card" class="card">
+      <div class="label">Comprobantes</div>
+      <p id="receipts-msg" class="small muted"></p>
+      <button type="button" id="receipts-load" class="secondary wide" hidden>Mostrar comprobantes</button>
+      <div id="receipts-list" class="receipts-list"></div>
+    </section>
+
+    <section id="history-card" class="card" hidden>
+      <div class="history-head">
+        <div class="label">Historial (últimos 12 meses)</div>
+        <div id="history-max" class="label"></div>
+      </div>
+      <div id="history-chart" class="chart" role="img"></div>
+      <div id="history-tip" class="chart-tip" hidden></div>
+      <ul id="history-list" class="history"></ul>
     </section>
 
     <button type="button" id="site-delete" class="danger wide">Eliminar sitio</button>
@@ -125,6 +210,65 @@
         <div id="folder-name" class="folder-name">Sin elegir</div>
       </div>
       <button type="button" id="folder-btn" class="secondary">Elegir</button>
+    </section>
+
+    <section class="card">
+      <div class="label">Respaldo</div>
+      <p class="hint fields-hint">Guarda tus pagos, montos, datos y configuración en <strong>Pagos/Respaldos/</strong>, junto a los comprobantes.</p>
+      <div class="row">
+        <button type="button" id="backup-btn">Respaldar ahora</button>
+        <button type="button" id="restore-btn" class="secondary">Restaurar…</button>
+      </div>
+      <div id="restore-confirm" class="notice" hidden>
+        <span id="restore-text"></span>
+        <div class="row">
+          <button type="button" id="restore-ok">Restaurar</button>
+          <button type="button" id="restore-cancel" class="secondary">Cancelar</button>
+        </div>
+      </div>
+      <p id="backup-status" class="status" hidden></p>
+    </section>
+
+    <section class="card settings">
+      <label class="toggle">
+        <input id="set-notifications" type="checkbox">
+        <span>
+          <strong>Recordatorios</strong>
+          <span class="sub">Notificación antes del vencimiento y otra si queda vencido.</span>
+        </span>
+      </label>
+      <div class="inline-fields">
+        <label>
+          Avisar
+          <span class="inline"><input id="set-days" type="number" min="0" max="15"> días antes</span>
+        </label>
+        <label>
+          A las
+          <span class="inline"><select id="set-hour"></select></span>
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="label">Clave</div>
+      <p class="hint fields-hint">Se pide cada vez que abres el panel.</p>
+      <form id="password-form">
+        <label>
+          Clave actual
+          <input id="pw-current" type="password" autocomplete="current-password" required>
+        </label>
+        <label>
+          Nueva clave
+          <input id="pw-new" type="password" autocomplete="new-password" required>
+        </label>
+        <label>
+          Repite la nueva clave
+          <input id="pw-confirm" type="password" autocomplete="new-password" required>
+        </label>
+        <button type="submit" class="wide">Cambiar clave</button>
+        <p id="pw-status" class="status" hidden></p>
+      </form>
+      <button type="button" id="lock-btn" class="secondary wide">Bloquear ahora</button>
     </section>
 
     <section class="card">
