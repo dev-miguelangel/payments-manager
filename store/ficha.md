@@ -18,30 +18,30 @@ Español
 
 ## Descripción
 
-¿Pagaste la luz este mes? ¿Dónde quedó el comprobante del crédito? Pagos reúne tus cuentas en un panel lateral de Chrome y ordena los comprobantes por ti.
+Pagos es tu checklist de cuentas del mes dentro de Chrome. Te muestra qué ya pagaste y qué falta, te avisa antes de cada vencimiento y guarda cada comprobante ordenado en una carpeta de tu computador, sin que tengas que renombrar ni mover archivos.
 
-MIENTRAS PAGAS
-• Guarda el sitio de cada cuenta (luz, agua, arriendo, créditos, colegios…) como pago recurrente o único, con un alias.
-• Los sitios guardados se marcan con un borde blanco para que sepas que estás en el lugar correcto.
-• Copia con un clic tus datos de pago: número de cliente, RUT, número de cuenta.
-• Guarda una captura del comprobante con el botón 📸, el clic derecho o Alt+Shift+P.
-• Los PDF que descargas desde un sitio guardado se mueven solos a su carpeta.
+¿POR QUÉ INSTALARLA?
+Si pagas tus cuentas por internet, seguro te ha pasado: no recuerdas si ya pagaste la luz, el comprobante quedó perdido entre las descargas o no sabes cuánto gastaste en servicios este año. Pagos resuelve eso en el mismo lugar donde ya pagas: el navegador.
 
-TODO ORDENADO
-• Los comprobantes quedan en la carpeta que elijas: Pagos/Recurrentes/2026-10 Octubre/Luz/…
-• La lista del mes muestra qué está pagado, qué está pendiente y qué vence pronto.
-• Pagos mensuales, bimestrales, trimestrales, semestrales o anuales. Se pueden pausar o archivar.
-• Recordatorios antes del vencimiento.
+CÓMO FUNCIONA
+1. Entra al sitio donde pagas una cuenta (banco, empresa de luz, agua, internet, colegio…) y guárdalo con un nombre, por ejemplo "Luz" o "Crédito auto".
+2. Cuando pagues, guarda el comprobante con un clic. Pagos lo deja en Pagos/Recurrentes/2026-10 Octubre/Luz/ y marca el mes como pagado.
+3. Abre el panel lateral cuando quieras para ver qué está pagado, qué está pendiente y qué vence pronto.
 
-MONTOS Y RESÚMENES
-• Registra lo que pagaste cada mes o define un monto fijo, como la cuota de un crédito.
-• Historial de 12 meses por cuenta, con la variación respecto al mes anterior.
-• Resumen del mes, 3, 6 o 12 meses con gráficos y tabla de detalle, exportable a Excel (.xlsx).
+LO QUE OBTIENES
+• Nunca más un pago olvidado: lista del mes con su estado y recordatorios antes del vencimiento.
+• Comprobantes ordenados solos: capturas con un clic, con el clic derecho o con Alt+Shift+P. Los PDF que descargas desde un sitio guardado se mueven a su carpeta automáticamente.
+• Pagas sin buscar datos: tu número de cliente, RUT o número de cuenta quedan a mano con un botón para copiarlos.
+• Sabes dónde estás: los sitios de pago guardados se marcan con un borde para que confirmes que es el sitio correcto.
+• Control de tus gastos: anota cuánto pagaste cada mes o define un monto fijo, como la cuota de un crédito. Mira el historial de cada cuenta y un resumen de 1, 3, 6 o 12 meses con gráficos, exportable a Excel.
+• Se adapta a tus cuentas: pagos mensuales, bimestrales, trimestrales, semestrales, anuales o únicos. Varios pagos en un mismo sitio, pausar y archivar.
 
-PRIVADO Y SEGURO
-• Clave de acceso: el panel se abre bloqueado.
-• Respaldo y restauración en tu propia carpeta.
-• Tus datos no salen de tu computador: no hay cuentas, servidores ni publicidad.
+PRIVADA POR DISEÑO
+• Tus datos no salen de tu computador: sin cuentas, sin servidores, sin publicidad.
+• Clave de acceso: el panel se abre siempre bloqueado.
+• Respalda y restaura tu información en tu propia carpeta.
+
+Hecha para quienes pagan sus cuentas en línea y quieren tenerlas al día y en orden, sin planillas ni carpetas desordenadas.
 
 ## Capturas sugeridas (1280×800 o 640×400, de 1 a 5)
 1. Panel con la lista del mes (pagados, pendientes, por vencer) junto a un sitio de pago con el borde blanco.

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><script src="helpers.js"></script></head>
+<body>
+  <div class="caption">
+    <h1>Comprobantes ordenados solos</h1>
+    <p>Un clic y la captura queda en su carpeta, por mes y por cuenta. El mes queda marcado como pagado.</p>
+  </div>
+  <div class="browser">
+    <div class="toolbar"><div class="dots"><i></i><i></i><i></i></div><div class="url"><b>electrica-ejemplo.cl</b>/pagar/comprobante</div><img class="ext-icon" src="../icons/icon32.png" alt=""></div>
+    <div class="window">
+      <div class="page saved">
+        <div class="site">
+          <div class="site-nav"><div class="site-logo"><i style="background:#f59e0b"></i>Eléctrica Ejemplo</div><span>Mi cuenta · Ayuda</span></div>
+          <div class="site-body">
+            <div class="site-card">
+              <div class="site-ok">✓</div>
+              <h2>Pago exitoso</h2>
+              <p class="muted">Tu pago fue procesado correctamente.</p>
+              <div class="site-row"><span>Nº cliente</span><b>1234567-8</b></div>
+              <div class="site-row"><span>Nº operación</span><b>58219347</b></div>
+              <div class="site-row"><span>Fecha</span><b id="today"></b></div>
+              <div class="site-total"><span>Monto pagado</span><span>$32.450</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sidepanel">
+        <div class="sidepanel-head"><img src="../icons/icon16.png" alt="">Pagos</div>
+        <iframe id="panel" src="../sidepanel.html?tab=https://electrica-ejemplo.cl/pagar/comprobante"></iframe>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.getElementById('today').textContent = NOW.toLocaleDateString('es-CL');
+    // The panel right after pressing "📸 Guardar comprobante".
+    whenReady(document.getElementById('panel'), (doc) => {
+      const status = doc.getElementById('receipt-status');
+      status.textContent = `✅ electrica-ejemplo.cl.Luz: guardado en Documentos/Pagos/Recurrentes/${MONTH_FOLDER}/Luz/${TODAY}_10-42-17.png`;
+      status.className = 'status ok';
+      status.hidden = false;
+      // Show the receipt section, below the month list.
+      doc.scrollingElement.scrollTop = doc.getElementById('current').offsetTop - 70;
+    });
+  </script>
+</body></html>

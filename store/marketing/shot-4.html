@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><script src="helpers.js"></script>
+<style>
+  .panels { position: absolute; top: 120px; bottom: -12px; left: 0; right: 0; display: flex; justify-content: center; gap: 40px; }
+  .panels .sidepanel { width: 420px; border: 0; border-radius: 12px 12px 0 0; overflow: hidden; box-shadow: 0 20px 60px rgba(15, 23, 42, .35); }
+</style></head>
+<body>
+  <div class="caption">
+    <h1>Todo lo de cada cuenta, a mano</h1>
+    <p>Datos para copiar, monto fijo de la cuota, vencimiento e historial de 12 meses.</p>
+  </div>
+  <div class="panels">
+    <div class="sidepanel">
+      <div class="sidepanel-head"><img src="../icons/icon16.png" alt="">Pagos</div>
+      <iframe id="top" src="../sidepanel.html"></iframe>
+    </div>
+    <div class="sidepanel">
+      <div class="sidepanel-head"><img src="../icons/icon16.png" alt="">Pagos</div>
+      <iframe id="bottom" src="../sidepanel.html"></iframe>
+    </div>
+  </div>
+  <script>
+    // Left: settings of "Crédito auto" (fixed amount). Right: "Luz", scrolled to its data and history.
+    const open = (doc, name) => doc.querySelector(`button[title="Configurar ${name}"]`).click();
+    whenReady(document.getElementById('top'), (doc) => open(doc, 'banco-ejemplo.cl.Crédito auto'));
+    whenReady(document.getElementById('bottom'), (doc) => {
+      open(doc, 'electrica-ejemplo.cl.Luz');
+      setTimeout(() => {
+        doc.getElementById('receipts-card').hidden = true;
+        // Scroll only the panel: scrollIntoView would also move this page.
+        doc.scrollingElement.scrollTop = doc.querySelector('#site-fields').closest('.card').offsetTop - 8;
+      }, 600);
+    });
+  </script>
+</body></html>

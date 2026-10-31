@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+  body { width: 1400px; height: 560px; position: relative; color: #fff; }
+  .text { position: absolute; left: 96px; top: 0; bottom: 0; width: 720px; display: flex; flex-direction: column; justify-content: center; }
+  .brand { display: flex; align-items: center; gap: 16px; font-size: 30px; font-weight: 700; }
+  .brand img { width: 64px; height: 64px; }
+  h1 { margin: 26px 0 14px; font-size: 48px; line-height: 1.08; letter-spacing: -0.02em; }
+  p { margin: 0; font-size: 22px; color: #dbeafe; line-height: 1.4; }
+  .sidepanel { position: absolute; right: 120px; top: 56px; height: 560px; width: 420px; border: 0; border-radius: 12px 12px 0 0; overflow: hidden; box-shadow: 0 20px 60px rgba(15, 23, 42, .35); }
+</style></head>
+<body>
+  <div class="text">
+    <div class="brand"><img src="../icons/icon128.png" alt="">Pagos</div>
+    <h1>Tus cuentas al día.<br>Tus comprobantes en orden.</h1>
+    <p>Checklist del mes, recordatorios y comprobantes guardados solos en tu carpeta.</p>
+  </div>
+  <div class="sidepanel">
+    <div class="sidepanel-head"><img src="../icons/icon16.png" alt="">Pagos</div>
+    <iframe src="../sidepanel.html?tab=https://fibra-ejemplo.cl/mi-cuenta/pagar"></iframe>
+  </div>
+</body></html>

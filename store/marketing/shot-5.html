@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+  .split { position: absolute; top: 120px; bottom: -12px; left: 48px; right: 48px; display: flex; gap: 56px; }
+  .points { flex: 1; color: #fff; padding-top: 40px; }
+  .point { display: flex; gap: 18px; margin-bottom: 34px; }
+  .point .icon { width: 52px; height: 52px; border-radius: 14px; background: rgba(255,255,255,.16); display: grid; place-items: center; font-size: 26px; flex: 0 0 auto; }
+  .point h2 { margin: 2px 0 4px; font-size: 22px; }
+  .point p { margin: 0; color: #dbeafe; font-size: 17px; line-height: 1.45; }
+  .split .sidepanel { width: 420px; border: 0; border-radius: 12px 12px 0 0; overflow: hidden; box-shadow: 0 20px 60px rgba(15, 23, 42, .35); }
+</style></head>
+<body>
+  <div class="caption">
+    <h1>Privada por diseño</h1>
+    <p>Tus pagos son cosa tuya: nada sale de tu computador.</p>
+  </div>
+  <div class="split">
+    <div class="points">
+      <div class="point"><div class="icon">🔒</div><div><h2>Clave de acceso</h2><p>El panel se abre siempre bloqueado.</p></div></div>
+      <div class="point"><div class="icon">💻</div><div><h2>Sin cuentas ni servidores</h2><p>Los datos quedan en tu navegador y los comprobantes en la carpeta que elijas.</p></div></div>
+      <div class="point"><div class="icon">🗂️</div><div><h2>Respaldo en tu carpeta</h2><p>Respalda y restaura tu información cuando quieras.</p></div></div>
+      <div class="point"><div class="icon">🚫</div><div><h2>Sin publicidad</h2><p>Ni rastreo, ni analítica.</p></div></div>
+    </div>
+    <div class="sidepanel">
+      <div class="sidepanel-head"><img src="../icons/icon16.png" alt="">Pagos</div>
+      <iframe src="../sidepanel.html?locked"></iframe>
+    </div>
+  </div>
+</body></html>
