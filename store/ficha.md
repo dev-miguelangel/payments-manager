@@ -86,4 +86,6 @@ Certificar:
 Explicación: los datos se guardan solo en el almacenamiento local del navegador y en la carpeta que elige el usuario. La extensión no envía datos a ningún servidor.
 
 ## Política de privacidad
-URL donde publiques `docs/privacidad.html` (por ejemplo, con GitHub Pages: `https://<usuario>.github.io/<repo>/privacidad.html`).
+https://dev-miguelangel.github.io/payments-manager/privacidad.html
+
+(GitHub Pages: *Settings → Pages → Deploy from a branch → `main` / `/docs`*.)
