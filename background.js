@@ -203,7 +203,7 @@ async function syncContextMenu() {
   if (single.length) {
     await create({
       id: MENU_ID,
-      title: 'Guardar comprobante (Pagos)',
+      title: 'Guardar comprobante (Mis Pagos al Día)',
       contexts: MENU_CONTEXTS,
       documentUrlPatterns: single.flatMap(matchPatterns),
     });
@@ -211,7 +211,7 @@ async function syncContextMenu() {
   if (multi.length) {
     await create({
       id: MENU_MULTI_ID,
-      title: 'Guardar comprobante (Pagos)',
+      title: 'Guardar comprobante (Mis Pagos al Día)',
       contexts: MENU_CONTEXTS,
       documentUrlPatterns: multi.flatMap(([d]) => matchPatterns(d)),
     });

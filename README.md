@@ -1,4 +1,4 @@
-# Pagos
+# Mis Pagos al Día
 
 Extensión de Chrome para organizar tus pagos mensuales y únicos y guardar sus comprobantes ordenados en una carpeta de tu computador.
 
@@ -10,7 +10,7 @@ Funciona desde un panel lateral: guardas el sitio de cada cuenta (luz, agua, arr
 - Guarda el sitio de cada pago como **recurrente** (mensual, bimestral, trimestral, semestral o anual) o **único**, con un alias. Un mismo sitio puede tener varios pagos.
 - Los sitios guardados se marcan con un **borde blanco**.
 - **Datos del pago** (Nº cliente, RUT, cuenta…) con botón para copiarlos, y una nota libre.
-- **Guardar comprobante:** botón 📸 en el panel, clic derecho → *Guardar comprobante (Pagos)* o <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>.
+- **Guardar comprobante:** botón 📸 en el panel, clic derecho → *Guardar comprobante (Mis Pagos al Día)* o <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>.
 - Los **PDF descargados** desde un sitio guardado se mueven solos a su carpeta.
 
 **Control del mes**
@@ -56,7 +56,7 @@ Cada pago usa su alias como nombre de carpeta (o el dominio si no tiene alias).
 1. Clona el repositorio (`git clone https://github.com/dev-miguelangel/payments-manager.git`) o descarga el zip desde GitHub y descomprímelo.
 2. Abre `chrome://extensions` y activa el **Modo de desarrollador**.
 3. Pulsa **Cargar descomprimida** y elige la carpeta del proyecto.
-4. Pulsa el icono de Pagos para abrir el panel y crea tu clave.
+4. Pulsa el icono de Mis Pagos al Día para abrir el panel y crea tu clave.
 
 Para usarla en ventanas de incógnito, activa *Permitir en modo incógnito* en los detalles de la extensión. El resumen de pagos se abre en una ventana normal, porque Chrome no permite páginas de extensiones en incógnito.
 

@@ -3,12 +3,12 @@
 Textos listos para copiar en el Developer Dashboard. Este archivo no va en el zip.
 
 ## Nombre
-Pagos – Control de pagos mensuales
+Mis Pagos al Día
 
 > El nombre visible lo toma de `manifest.json` (`"name"`). Si lo cambias aquí, cámbialo también allá.
 
 ## Resumen (máx. 132 caracteres; viene de `"description"` en el manifest)
-Organiza tus pagos mensuales y únicos, y guarda sus comprobantes.
+Controla qué cuentas pagaste cada mes, recibe avisos antes del vencimiento y guarda tus comprobantes ordenados.
 
 ## Categoría
 Productividad (Herramientas)
@@ -18,30 +18,27 @@ Español
 
 ## Descripción
 
-Pagos es tu checklist de cuentas del mes dentro de Chrome. Te muestra qué ya pagaste y qué falta, te avisa antes de cada vencimiento y guarda cada comprobante ordenado en una carpeta de tu computador, sin que tengas que renombrar ni mover archivos.
+Mis Pagos al Día es un panel lateral de Chrome para llevar el control de las cuentas que pagas en línea: luz, agua, internet, arriendo, créditos, colegio y otras. Muestra qué pagaste y qué falta este mes, avisa antes de cada vencimiento y guarda los comprobantes en una carpeta de tu computador, ordenados por mes y por cuenta.
 
-¿POR QUÉ INSTALARLA?
-Si pagas tus cuentas por internet, seguro te ha pasado: no recuerdas si ya pagaste la luz, el comprobante quedó perdido entre las descargas o no sabes cuánto gastaste en servicios este año. Pagos resuelve eso en el mismo lugar donde ya pagas: el navegador.
+Cómo se usa
+1. Abre el sitio donde pagas una cuenta y guárdalo desde el panel con un nombre, por ejemplo "Luz".
+2. Después de pagar, pulsa "Guardar comprobante". La captura se guarda en Pagos/Recurrentes/<mes>/Luz/ y el mes queda marcado como pagado.
+3. Revisa en el panel qué cuentas están pagadas, pendientes o por vencer.
 
-CÓMO FUNCIONA
-1. Entra al sitio donde pagas una cuenta (banco, empresa de luz, agua, internet, colegio…) y guárdalo con un nombre, por ejemplo "Luz" o "Crédito auto".
-2. Cuando pagues, guarda el comprobante con un clic. Pagos lo deja en Pagos/Recurrentes/2026-10 Octubre/Luz/ y marca el mes como pagado.
-3. Abre el panel lateral cuando quieras para ver qué está pagado, qué está pendiente y qué vence pronto.
+Funciones
+• Lista mensual con el estado de cada cuenta y una barra de progreso.
+• Pagos mensuales, bimestrales, trimestrales, semestrales, anuales o únicos; se pueden pausar o archivar.
+• Recordatorios antes del vencimiento, con días y hora configurables.
+• Comprobantes con el botón del panel, el menú del clic derecho o el atajo Alt+Shift+P. Los PDF descargados desde un sitio guardado se mueven a su carpeta.
+• Datos de cada cuenta (número de cliente, RUT, número de cuenta) con un botón para copiarlos mientras pagas.
+• Montos pagados por mes y monto fijo opcional, por ejemplo la cuota de un crédito.
+• Historial de 12 meses por cuenta y resumen de 1, 3, 6 o 12 meses con gráficos y tabla, exportable a .xlsx.
+• Los sitios guardados se marcan con un borde para reconocerlos.
 
-LO QUE OBTIENES
-• Nunca más un pago olvidado: lista del mes con su estado y recordatorios antes del vencimiento.
-• Comprobantes ordenados solos: capturas con un clic, con el clic derecho o con Alt+Shift+P. Los PDF que descargas desde un sitio guardado se mueven a su carpeta automáticamente.
-• Pagas sin buscar datos: tu número de cliente, RUT o número de cuenta quedan a mano con un botón para copiarlos.
-• Sabes dónde estás: los sitios de pago guardados se marcan con un borde para que confirmes que es el sitio correcto.
-• Control de tus gastos: anota cuánto pagaste cada mes o define un monto fijo, como la cuota de un crédito. Mira el historial de cada cuenta y un resumen de 1, 3, 6 o 12 meses con gráficos, exportable a Excel.
-• Se adapta a tus cuentas: pagos mensuales, bimestrales, trimestrales, semestrales, anuales o únicos. Varios pagos en un mismo sitio, pausar y archivar.
-
-PRIVADA POR DISEÑO
-• Tus datos no salen de tu computador: sin cuentas, sin servidores, sin publicidad.
-• Clave de acceso: el panel se abre siempre bloqueado.
-• Respalda y restaura tu información en tu propia carpeta.
-
-Hecha para quienes pagan sus cuentas en línea y quieren tenerlas al día y en orden, sin planillas ni carpetas desordenadas.
+Privacidad
+• Los datos se guardan solo en tu navegador y en la carpeta que eliges. No hay cuentas, servidores, publicidad ni analítica.
+• Clave de acceso: el panel se abre bloqueado.
+• Respaldo y restauración en tu propia carpeta.
 
 ## Capturas sugeridas (1280×800 o 640×400, de 1 a 5)
 1. Panel con la lista del mes (pagados, pendientes, por vencer) junto a un sitio de pago con el borde blanco.

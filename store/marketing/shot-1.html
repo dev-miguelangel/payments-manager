@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"></head>
+<html lang="es"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><script src="helpers.js"></script></head>
 <body>
   <div class="caption">
     <h1>Tus cuentas del mes, al día</h1>
@@ -15,7 +15,7 @@
             <div class="site-card">
               <h2>Pagar cuenta</h2>
               <p class="muted">Servicio de internet hogar · Cliente 88213-4</p>
-              <div class="site-row"><span>Periodo</span><b>Octubre</b></div>
+              <div class="site-row"><span>Periodo</span><b id="period"></b></div>
               <div class="site-row"><span>Vencimiento</span><b>Mañana</b></div>
               <div class="site-total"><span>Total a pagar</span><span>$25.990</span></div>
               <div class="site-btn" style="background:#7c3aed">Pagar ahora</div>
@@ -24,9 +24,10 @@
         </div>
       </div>
       <div class="sidepanel">
-        <div class="sidepanel-head"><img src="../icons/icon16.png" alt="">Pagos</div>
+        <div class="sidepanel-head"><img src="../icons/icon16.png" alt="">Mis Pagos al Día</div>
         <iframe src="../sidepanel.html?tab=https://fibra-ejemplo.cl/mi-cuenta/pagar"></iframe>
       </div>
     </div>
   </div>
+  <script>document.getElementById('period').textContent = MONTHS[NOW.getMonth()];</script>
 </body></html>

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Pagos",
-  "version": "1.0.0",
-  "description": "Organiza tus pagos mensuales y únicos, y guarda sus comprobantes.",
+  "name": "Mis Pagos al Día",
+  "version": "1.0.1",
+  "description": "Controla qué cuentas pagaste cada mes, recibe avisos antes del vencimiento y guarda tus comprobantes ordenados.",
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",
@@ -10,7 +10,7 @@
     "128": "icons/icon128.png"
   },
   "action": {
-    "default_title": "Pagos",
+    "default_title": "Mis Pagos al Día",
     "default_icon": {
       "16": "icons/icon16.png",
       "32": "icons/icon32.png"
